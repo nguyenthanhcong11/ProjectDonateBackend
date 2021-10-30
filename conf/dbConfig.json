@@ -1,0 +1,9 @@
+{
+    "dbHost": "localhost",
+    "dbPort": 3306,
+    "dbName": "projectDonte",
+    "tableName": "donate",
+    "userName": "root",
+    "dbPass": "visaoso9",
+    "fieldsFormat": "name varchar(200) primary key, money INT, comment TEXT"
+}
