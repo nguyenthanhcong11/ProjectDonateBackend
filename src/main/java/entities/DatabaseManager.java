@@ -115,29 +115,34 @@ public class DatabaseManager {
         execQuery(query, "insertTable");
     }
 
-    public DonateInfo getHighestDonate(String startDate, String endDate) {
-        DonateInfo objDonate = new DonateInfo();
-
-        String query = "SELECT name, SUM(money) as money, comment  FROM "+ config.tableName+" WHERE createdOn >= " +"\'"+ startDate + "\' AND createdOn <= \'"+endDate+"\' ORDER BY SUM(money) DESC LIMIT 1";
+    public List<DonateInfo> getHighestDonate(String startDate, String endDate, int num) {
+        List<DonateInfo> result = new LinkedList<>();
+        String query = "SELECT name, SUM(money) as money  FROM "+ config.tableName+" WHERE createdOn >= " +"\'"+ startDate + "\' AND createdOn <= \'"+endDate+"\' group by name ORDER BY SUM(money) DESC LIMIT " + num;
         ResultSet rs = null;
         try {
             rs = connection.createStatement().executeQuery(query);
+            int count = 0;
             while(rs.next()) {
+                DonateInfo objDonate = new DonateInfo();
                 objDonate.name = rs.getString("name");
                 objDonate.money = (rs.getInt("money"));
                 objDonate.comment = "";
-                break;
+                result.add(objDonate);
+                count++;
+                if(count >= num) {
+                    break;
+                }
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-        return objDonate;
+        return result;
     }
 
     public List<DonateInfo> getListDonate(String startDate, String endDate) {
         List<DonateInfo> result = new LinkedList<>();
 
-        String query = "SELECT name, money, comment  FROM "+ config.tableName+" WHERE createdOn >= " +"\'"+ startDate + "\' AND createdOn <= \'"+endDate+"\'";
+        String query = "SELECT name, money, comment, createdOn  FROM "+ config.tableName+" WHERE createdOn >= " +"\'"+ startDate + "\' AND createdOn <= \'"+endDate+"\'";
         ResultSet rs = null;
         try {
             rs = connection.createStatement().executeQuery(query);
@@ -146,6 +151,7 @@ public class DatabaseManager {
                 objDonate.name = rs.getString("name");
                 objDonate.money = (rs.getInt("money"));
                 objDonate.comment = rs.getString("comment");
+                objDonate.timeStamp = rs.getTimestamp("createdOn").getTime();
                 result.add(objDonate);
             }
         } catch (SQLException throwables) {

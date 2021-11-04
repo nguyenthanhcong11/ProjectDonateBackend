@@ -58,7 +58,7 @@ public class RestApi extends AbstractVerticle {
         String result = "";
         JsonObject body = routingContext.getBodyAsJson();
 
-        result = gson.toJson(DatabaseManager.getInstance().getHighestDonate(body.getString("startDate"), body.getString("endDate")));
+        result = gson.toJson(DatabaseManager.getInstance().getHighestDonate(body.getString("startDate"), body.getString("endDate"), body.getInteger("number")));
         HttpServerResponse response = routingContext.response();
         response.setStatusCode(200).end(result);
 

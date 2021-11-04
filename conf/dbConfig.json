@@ -4,6 +4,6 @@
     "dbName": "projectDonate",
     "tableName": "donate",
     "userName": "root",
-    "dbPass": "",
-    "fieldsFormat": "name varchar(200), money INT, comment TEXT, createdOn TIMESTAMP"
+    "dbPass": "visaoso9",
+    "fieldsFormat": "name varchar(200), money INT, comment TEXT, createdOn TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
 }
