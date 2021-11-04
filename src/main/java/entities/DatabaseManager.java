@@ -2,8 +2,9 @@ package entities;
 
 import config.DatabaseConfig;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
 
 public class DatabaseManager {
     private static DatabaseManager instance; // Sketelon instance
@@ -15,7 +16,7 @@ public class DatabaseManager {
 
         config = DatabaseConfig.getInstance();
         openConnection();
-        closeConnection();
+       // closeConnection();
     }
 
     public static DatabaseManager getInstance() {
@@ -101,8 +102,71 @@ public class DatabaseManager {
     public void createTable(String fieldsFormat) {
         StringBuilder builder = new StringBuilder();
         builder.append("CREATE TABLE IF NOT EXISTS ").append(config.dbName).append(".").append(config.tableName).append("(").append(fieldsFormat).append(") DEFAULT CHARACTER SET utf8");
+
         String query = builder.toString();
         execQuery(query, "createTable");
+    }
+
+    public void insertTable(DonateInfo infor) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("INSERT INTO ").append(config.tableName).append("(name, money, comment) VALUES( \"").append(infor.name).append("\" ,").append(infor.money).append(",\"").append(infor.comment).append("\")");
+
+        String query = builder.toString();
+        execQuery(query, "insertTable");
+    }
+
+    public DonateInfo getHighestDonate(String startDate, String endDate) {
+        DonateInfo objDonate = new DonateInfo();
+
+        String query = "SELECT name, SUM(money) as money, comment  FROM "+ config.tableName+" WHERE createdOn >= " +"\'"+ startDate + "\' AND createdOn <= \'"+endDate+"\' ORDER BY SUM(money) DESC LIMIT 1";
+        ResultSet rs = null;
+        try {
+            rs = connection.createStatement().executeQuery(query);
+            while(rs.next()) {
+                objDonate.name = rs.getString("name");
+                objDonate.money = (rs.getInt("money"));
+                objDonate.comment = "";
+                break;
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return objDonate;
+    }
+
+    public List<DonateInfo> getListDonate(String startDate, String endDate) {
+        List<DonateInfo> result = new LinkedList<>();
+
+        String query = "SELECT name, money, comment  FROM "+ config.tableName+" WHERE createdOn >= " +"\'"+ startDate + "\' AND createdOn <= \'"+endDate+"\'";
+        ResultSet rs = null;
+        try {
+            rs = connection.createStatement().executeQuery(query);
+            while(rs.next()) {
+                DonateInfo objDonate = new DonateInfo();
+                objDonate.name = rs.getString("name");
+                objDonate.money = (rs.getInt("money"));
+                objDonate.comment = rs.getString("comment");
+                result.add(objDonate);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return result;
+    }
+
+    public long getTotalDonate(String startDate, String endDate) {
+        String query = "SELECT SUM(money)  FROM "+ config.tableName +" WHERE createdOn >= " +"\'"+ startDate + "\' AND createdOn <= \'"+endDate+"\'";
+        ResultSet rs = null;
+        try {
+            rs = connection.createStatement().executeQuery(query);
+            while(rs.next()) {
+                return rs.getLong(1);
+            }
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return 0;
     }
 
     public void grantPermission(String host, String dbName, String userName, String password) {
