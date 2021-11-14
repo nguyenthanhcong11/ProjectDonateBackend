@@ -109,7 +109,7 @@ public class DatabaseManager {
 
     public void insertTable(DonateInfo infor) {
         StringBuilder builder = new StringBuilder();
-        builder.append("INSERT INTO ").append(config.tableName).append("(name, money, comment) VALUES( \"").append(infor.name).append("\" ,").append(infor.money).append(",\"").append(infor.comment).append("\")");
+        builder.append("INSERT INTO ").append(config.tableName).append("(name, money, comment, methodDonate) VALUES( \"").append(infor.name).append("\" ,").append(infor.money).append(",\"").append(infor.comment).append(",\"").append(infor.methodDonate).append("\")");
 
         String query = builder.toString();
         execQuery(query, "insertTable");
@@ -127,6 +127,7 @@ public class DatabaseManager {
                 objDonate.name = rs.getString("name");
                 objDonate.money = (rs.getInt("money"));
                 objDonate.comment = "";
+                objDonate.methodDonate = "";
                 result.add(objDonate);
                 count++;
                 if(count >= num) {
@@ -142,7 +143,7 @@ public class DatabaseManager {
     public List<DonateInfo> getListDonate(String startDate, String endDate) {
         List<DonateInfo> result = new LinkedList<>();
 
-        String query = "SELECT name, money, comment, createdOn  FROM "+ config.tableName+" WHERE createdOn >= " +"\'"+ startDate + "\' AND createdOn <= \'"+endDate+"\'";
+        String query = "SELECT name, money, comment, methodDonate, createdOn  FROM "+ config.tableName+" WHERE createdOn >= " +"\'"+ startDate + "\' AND createdOn <= \'"+endDate+"\'";
         ResultSet rs = null;
         try {
             rs = connection.createStatement().executeQuery(query);
@@ -151,6 +152,7 @@ public class DatabaseManager {
                 objDonate.name = rs.getString("name");
                 objDonate.money = (rs.getInt("money"));
                 objDonate.comment = rs.getString("comment");
+                objDonate.methodDonate = rs.getString("methodDonate");
                 objDonate.timeStamp = rs.getTimestamp("createdOn").getTime();
                 result.add(objDonate);
             }

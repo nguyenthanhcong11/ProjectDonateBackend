@@ -5,5 +5,5 @@
     "tableName": "donate",
     "userName": "root",
     "dbPass": "visaoso9",
-    "fieldsFormat": "name varchar(200), money INT, comment TEXT, createdOn TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
+    "fieldsFormat": "name varchar(200), money INT, comment TEXT, methodDonate TEXT , createdOn TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP"
 }
